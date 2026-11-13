@@ -59,6 +59,35 @@ void insert_Tail(LList *L, Data x) {
     L->spt++;
 }
 ///////////////////////////////////////
+void del_Head(LList *L){
+    if (emptyList(*L)) {
+        printf("Danh sach rong\n");
+        return;
+    }
+    else {
+        Node *pp;
+        pp = L->pHead;
+        L->pHead = pp->link;
+        free(pp);
+        L->spt--;
+        if(L->pHead == NULL) L->pTail == NULL;
+    }
+}
+///////////////////////////////////////
+void del_After(LList *L, Node *q) {
+    Node *pp;
+    if (q == NULL) {
+        printf("Sinh vien nay khong ton tai\n");
+    }
+    else {
+        pp = q->link;
+        if(L->pTail == q->link) L->pTail = q;
+        q->link = pp->link;
+        free(pp);
+        L->spt--;
+    }
+}
+///////////////////////////////////////
 void insert_After (LList *L,Node *q, Data x) {
     Node *pp;
     if (q == NULL) {

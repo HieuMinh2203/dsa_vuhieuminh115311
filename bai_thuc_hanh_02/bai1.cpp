@@ -5,7 +5,7 @@ int main() {
     int n;
     printf("Nhap so phan tu: ");
     scanf("%d", &n);
-    float *mang = (float *)malloc(sizeof(float));
+    float *mang = (float *)malloc(n * sizeof(float));
     for (int i = 0; i < n; i++) {
         scanf("%f", &mang[i]);
     }
