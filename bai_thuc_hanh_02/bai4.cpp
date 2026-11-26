@@ -88,6 +88,31 @@ void del_After(LList *L, Node *q) {
     }
 }
 ///////////////////////////////////////
+void del_MaSV(LList *L, int ma) {
+    Node *pp = L->pHead;
+    Node *q;
+    while (pp != NULL && (pp->infor.masv != ma)) {
+        q = pp;
+        pp = pp->link;
+    }
+    if (NULL == pp) {
+        printf("Khong tim thay sinh vien co ma %d", ma);
+        return;
+    }
+    else {
+        if( pp == L->pHead) {
+            del_Head(L);
+            printf("Da xoa thanh cong sinh vien co ma %d", ma);
+        }
+        else {
+            del_After(L,q);
+            printf("Da xoa thanh cong sinh vien co ma %d", ma);
+        }
+    }
+}
+///////////////////////////////////////
+
+///////////////////////////////////////
 void insert_After (LList *L,Node *q, Data x) {
     Node *pp;
     if (q == NULL) {
@@ -131,6 +156,22 @@ void processList(LList L){
     	}
 }
 /////////////////////////////////////////
+void Search_Ma(LList *L, int ma) {
+    Node *pp = L->pHead;
+    while (pp != NULL && (pp->infor.masv != ma)){
+        pp = pp->link;
+    }
+    if (pp == NULL){
+        printf("Khong tim thay sinh vien co ma %d", ma);
+        return;
+    }
+    else {
+        printf("Da tim thay sinh vien co ma %d\n", ma);
+        printf("Thong tin cua sinh vien:\n");
+        in(pp->infor);
+    }
+}
+////////////////////////////////////////////
 
 int main(){
     LList L;
@@ -144,6 +185,8 @@ int main(){
 	    printf("\n1: Them nut vao dau danh sach");
 	    printf("\n2: Them nut vao cuoi danh sach");
 	    printf("\n3: Them nut vao sau mot nut khac trong danh sach");
+        printf("\n4: Xoa sinh vien theo ma");
+        printf("\n5: Tim sinh vien theo ma");
 	    printf("\n9: Duyet ds");
 	    printf("\n0: Thoat");
 	    printf("\nMoi ban chon: ");
@@ -163,7 +206,6 @@ int main(){
                     insert_Tail(&L, x);
             	break;
             case 3:
-	            processList(L);
                 printf("ban muon them sinh vien moi vao sau sinh vien nao (nhap ma sinh vien): ");
                 scanf("%d", &y);
                 q = L.pHead;
@@ -179,9 +221,20 @@ int main(){
                         insert_After(&L, q, x);
                 }
             	break;
-            case 4: 
-                //..
+            case 4: {
+                printf("Nhap ma sinh vien can xoa: ");
+                int ma;
+                scanf("%d",&ma);
+                del_MaSV(&L, ma);
                 break;
+            }
+            case 5: {
+                printf("Nhap ma sinh vien can tim: ");
+                int ma;
+                scanf("%d", &ma);
+                Search_Ma(&L, ma);
+                break;
+            }
             case 9: 
                 processList(L);
                 break;    
