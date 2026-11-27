@@ -7,7 +7,7 @@ typedef struct    {
 }Data;
 typedef struct tagNode    {
     	Data infor;
-    	struct tagNode *link;
+    	struct tagNode *prev, *next;
 }Node;
 typedef struct    {
     	Node *pHead;  
@@ -27,19 +27,25 @@ int emptyList(LList L)
     	return (L.spt == 0); 
 }
 /////////////////////////////////////
+int fullList(LList L)
+ {
+    	return (L.spt == 50); 
+}
+/////////////////////////////////////
 void insert_Head(LList *L, Data x)
     {
     	Node *pp;
     	pp = (Node*) malloc(sizeof(Node));
     	pp->infor = x;
-    	pp->link = NULL;
+    	pp->prev = pp->next = NULL;
     	if(emptyList(*L)){
     			L->pHead = pp;
     			L->pTail = pp;
     		}  	
         else {
-    		pp->link = L->pHead;
-    		L->pHead = pp;
+    		L->pHead->prev = pp;
+    		pp->next = L->pHead;
+            L->pHead = pp;
     		}
     	L->spt++;
     }
@@ -48,12 +54,13 @@ void insert_Tail(LList *L, Data x) {
     Node *pp;
     pp = (Node *)malloc(sizeof(Node));
     pp->infor = x;
-    pp->link = NULL;
+    pp->prev = pp->next = NULL;
     if (emptyList(*L)){
         L->pHead = L->pTail = pp;
     }
     else {
-        L->pTail->link = pp;
+        L->pTail->next = pp;
+        pp->prev = L->pTail;
         L->pTail = pp;
     }
     L->spt++;
@@ -67,10 +74,11 @@ void del_Head(LList *L){
     else {
         Node *pp;
         pp = L->pHead;
-        L->pHead = pp->link;
+        L->pHead = pp->next;
+        if (L->pHead != NULL) L->pHead->prev = NULL;
         free(pp);
         L->spt--;
-        if(L->pHead == NULL) L->pTail == NULL;
+        if(L->pHead == NULL) L->pTail = NULL;
     }
 }
 ///////////////////////////////////////
@@ -80,11 +88,13 @@ void del_After(LList *L, Node *q) {
         printf("Sinh vien nay khong ton tai\n");
     }
     else {
-        pp = q->link;
-        if(L->pTail == q->link) L->pTail = q;
-        q->link = pp->link;
+        pp = q->next;
+        if(L->pTail == q->next) L->pTail = q;
+        q->next = pp->next;
+        if(pp->next != NULL) pp->next->prev = q; 
         free(pp);
         L->spt--;
+        if(L->pTail == NULL || L->pTail == pp) L->pTail = q;
     }
 }
 ///////////////////////////////////////
@@ -93,7 +103,7 @@ void del_MaSV(LList *L, int ma) {
     Node *q;
     while (pp != NULL && (pp->infor.masv != ma)) {
         q = pp;
-        pp = pp->link;
+        pp = pp->next;
     }
     if (NULL == pp) {
         printf("Khong tim thay sinh vien co ma %d", ma);
@@ -121,8 +131,10 @@ void insert_After (LList *L,Node *q, Data x) {
     else {
         pp = (Node *)malloc(sizeof(Node));
         pp->infor = x;
-        pp->link = q->link;
-        q->link = pp;
+        pp->next = q->next;
+        q->next->prev = pp;
+        q->next = pp;
+        pp->prev = q;
         if (q == L->pTail){
             L->pTail = pp;
         }
@@ -145,21 +157,29 @@ void nhap(Data *x){
     }
 }
 void in(Data x){
-    printf("Ten: %s, Ma: %d, Diem 1: %.2f, Diem 2: %.2f, Diem 2: %.2f\n", 
+    printf("Ten: %s, Ma: %d, Diem 1: %.2f, Diem 2: %.2f, Diem 3: %.2f\n", 
             x.hoten, x.masv, x.d1, x.d2, x.d3);
 }
-void processList(LList L){
+void processListNext(LList L){
     Node *pp = L.pHead;
     while( pp != NULL ){
         	in(pp->infor); //in dữ liệu trong node 
-        	pp = pp->link;
+        	pp = pp->next;
+    	}
+}
+/////////////////////////////////////////
+void processListPrev(LList L){
+    Node *pp = L.pTail;
+    while( pp != NULL ){
+        	in(pp->infor); //in dữ liệu trong node 
+        	pp = pp->prev;
     	}
 }
 /////////////////////////////////////////
 void Search_Ma(LList *L, int ma) {
     Node *pp = L->pHead;
     while (pp != NULL && (pp->infor.masv != ma)){
-        pp = pp->link;
+        pp = pp->next;
     }
     if (pp == NULL){
         printf("Khong tim thay sinh vien co ma %d", ma);
@@ -187,7 +207,8 @@ int main(){
 	    printf("\n3: Them nut vao sau mot nut khac trong danh sach");
         printf("\n4: Xoa sinh vien theo ma");
         printf("\n5: Tim sinh vien theo ma");
-	    printf("\n9: Duyet ds");
+	    printf("\n9: Duyet xuoi");
+        printf("\n10: Duyet nguoc");
 	    printf("\n0: Thoat");
 	    printf("\nMoi ban chon: ");
 	    int chon;
@@ -210,7 +231,7 @@ int main(){
                 scanf("%d", &y);
                 q = L.pHead;
                 while(q != NULL && q->infor.masv != y ){
-                    q = q->link;
+                    q = q->next;
                 }
                 if (q == NULL){
                     printf("Khong ton tai sinh vien nay\n");
@@ -236,8 +257,11 @@ int main(){
                 break;
             }
             case 9: 
-                processList(L);
+                processListNext(L);
                 break;    
+            case 10:
+                processListPrev(L);
+                break;
             case 0: 
                 printf("Bye bye\n");
 	            kt = 1;
